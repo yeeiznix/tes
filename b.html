@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Dashboard - Future Concept</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        :root {
+            --bg-main: #0a051b;
+            --bg-card: #130c2e;
+            --bg-sidebar: #0f0826;
+            --text-primary: #ffffff;
+            --text-muted: #847f9d;
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff007f;
+            --neon-purple: #8a2be2;
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR NAVIGASI DESKTOP --- */
+        aside {
+            width: 75px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 25px 0;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+            color: var(--neon-cyan);
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+            margin-bottom: 40px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            flex-grow: 1;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        .nav-item.active, .nav-item:hover {
+            color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .logout-btn {
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* --- KONTEN UTAMA --- */
+        main {
+            flex-grow: 1;
+            display: flex;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .dashboard-center {
+            flex: 3;
+            padding: 25px;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        /* --- HEADER / TOPBAR MODIFIED --- */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-cyan);
+        }
+
+        .search-box input {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(255, 0, 127, 0.15));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 12px 15px 12px 45px;
+            border-radius: 14px;
+            color: white;
+            outline: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* --- SECTION LIVE AUCTION --- */
+        section {
+            margin-bottom: 35px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .auction-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .auction-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.3) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .auction-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .auction-overlay {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+            background: rgba(15, 8, 38, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .time-box div, .bid-box div {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .time-box span, .bid-box span {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .btn-bid {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* --- 3D CAROUSEL & LIGHTING --- */
+        .swiper-container-wrapper {
+            position: relative;
+            width: 100%;
+            padding: 40px 0;
+            background: #04020d;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .swiper-container-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: -10%;
+            width: 120%;
+            height: 140px;
+            background: linear-gradient(95deg, rgba(0, 140, 255, 0) 10%, rgba(0, 243, 255, 0.7) 45%, rgba(0, 110, 255, 0.8) 55%, rgba(138, 43, 226, 0) 90%);
+            filter: blur(40px);
+            transform: rotate(-4deg);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .swiper {
+            width: 100%;
+            padding-top: 10px;
+            padding-bottom: 20px;
+            z-index: 1;
+            overflow: visible;
+        }
+
+        .swiper-slide {
+            background-position: center;
+            background-size: cover;
+            width: 210px;
+            height: 270px;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+            margin-right: 45px;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease, width 0.4s, height 0.4s;
+            filter: brightness(0.4) saturate(0.8);
+            cursor: pointer;
+        }
+
+        .swiper-slide-active {
+            width: 245px !important;
+            height: 330px !important;
+            filter: brightness(1) saturate(1.1);
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.25), 0 30px 60px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transform: translateY(-25px);
+        }
+
+        .slide-info-overlay {
+            width: 100%;
+            background: linear-gradient(360deg, #130c2ef2 0%, #130c2e99 70%, transparent 100%);
+            backdrop-filter: blur(4px);
+            padding: 18px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slide-meta-top {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .slide-author {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+
+        .slide-meta-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slide-price {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .slide-likes {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .swiper-slide-active .slide-likes {
+            color: var(--neon-pink);
+        }
+
+        /* --- SECTION HOT BIDS (SESUAI GRID FOTO) --- */
+        .bids-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .bid-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 12px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .bid-card:hover {
+            transform: scale(1.05);
+        }
+
+        .bid-thumbnail {
+            width: 100%;
+            height: 130px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .bid-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neon-cyan); /* Warna khusus folder bercahaya */
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bid-author {
+            font-size: 11px;
+            color: var(--text-muted); /* Warna muted abu-abu halus */
+            font-weight: 500;
+        }
+
+        /* --- RIGHT SIDEBAR (PROFILE PANEL) --- */
+        .right-panel {
+            flex: 1.2;
+            max-width: 360px;
+            background-color: var(--bg-sidebar);
+            border-left: 1px solid var(--glass-border);
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .profile-header {
+            text-align: center;
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,0,127,0.1) 0%, transparent 100%);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--neon-cyan);
+            margin-bottom: 15px;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 15px 10px;
+            border-radius: 14px;
+            text-align: center;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .stat-item i {
+            font-size: 22px;
+            display: block;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-item i:hover { transform: scale(1.15); }
+        .stat-item .fa-facebook { color: #1877f2; }
+        .stat-item .fa-instagram { color: #c13584; }
+        .stat-item .fa-youtube { color: #ff0000; }
+        .stat-item .fa-tiktok {
+            color: #ffffff;
+            text-shadow: 1px 1px #ff0050, -1px -1px #00f2fe;
+        }
+
+        .weather-time-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 15px;
+        }
+
+        .weather-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .weather-icon-large {
+            font-size: 38px;
+            background: linear-gradient(135deg, #ffaa00, var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(255, 170, 0, 0.4));
+        }
+
+        .temp-display {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .weather-info-text {
+            text-align: right;
+        }
+
+        .weather-status {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--neon-cyan);
+        }
+
+        .weather-city {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .weather-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-bottom: 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .weather-details span i {
+            color: var(--neon-cyan);
+            margin-right: 4px;
+        }
+
+        .card-time-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .card-time-footer .time-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+        }
+
+        .card-time-footer .date-text {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .recent-activity {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .activity-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        /* ================================================== MOBILE DRAWER RESPONSIVE CSS ================================================== */
+        .menu-toggle {
+            display: none;
+            width: 46px;
+            height: 46px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,.06);
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .menu-toggle:hover { background: rgba(255,255,255,.12); }
+        .mobile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.65);
+            opacity: 0;
+            visibility: hidden;
+            transition: .35s;
+            z-index: 998;
+        }
+
+        .mobile-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            max-width: 88%;
+            height: 100vh;
+            overflow-y: auto;
+            background: linear-gradient(180deg, #130c2e 0%, #0f0826 100%);
+            border-right: 1px solid rgba(255,255,255,.08);
+            transform: translateX(-100%);
+            transition: .35s ease;
+            z-index: 999;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .mobile-drawer.active { transform: translateX(0); }
+        .mobile-overlay.active { opacity: 1; visibility: visible; }
+
+        .drawer-header {
+            position: relative;
+            text-align: center;
+        }
+
+        .drawer-close {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            background: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .drawer-header .profile-avatar {
+            width: 82px;
+            height: 82px;
+            margin-bottom: 15px;
+        }
+
+        .drawer-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .drawer-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            color: #bbb;
+            transition: .25s;
+        }
+
+        .drawer-item i {
+            width: 22px;
+            text-align: center;
+        }
+
+        .drawer-item:hover {
+            background: rgba(255,255,255,.05);
+            color: #00f3ff;
+        }
+
+        .drawer-item.active {
+            background: rgba(0,243,255,.10);
+            color: #00f3ff;
+        }
+
+        .drawer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .drawer-section h3 { font-size: 16px; }
+        .status-loading {
+            font-size: 14px;
+            color: var(--text-muted);
+            padding: 40px 20px;
+            text-align: center;
+            width: 100%;
+            grid-column: 1 / -1;
+        }
+
+        @media(max-width:768px) {
+            body { overflow: auto; }
+            aside, .right-panel { display: none; }
+            main { display: block; }
+            .dashboard-center { width: 100%; padding: 18px; }
+            .topbar { display: flex; align-items: center; gap: 12px; }
+            .menu-toggle { display: flex; justify-content: center; align-items: center; }
+            .search-box { flex: 1; max-width: none; }
+            .auction-grid { grid-template-columns: 1fr; }
+            .bids-grid { grid-template-columns: repeat(2, 1fr); }
+            .swiper-slide { width: 155px; height: 210px; margin-right: 25px; }
+            .swiper-slide-active {
+                width: 185px !important;
+                height: 255px !important;
+                transform: translateY(-15px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Overlay & Mobile Drawer Component -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    <div class="mobile-drawer" id="mobileDrawer">
+        <div class="drawer-header">
+            <img class="profile-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Musfiqur" alt="Avatar">
+            <button class="drawer-close" id="drawerClose"><i class="fa-solid fa-xmark"></i></button>
+            <div class="profile-name">Musfiqur Rahman</div>
+            <div class="profile-email">nftexpert@gmail.com</div>
+            <div class="stats-row">
+                <div class="stat-item"><i class="fa-brands fa-facebook"></i></div>
+                <div class="stat-item"><i class="fa-brands fa-instagram"></i></div>
+                <div class="stat-item"><i class="fa-brands fa-youtube"></i></div>
+                <div class="stat-item"><i class="fa-brands fa-tiktok"></i></div>
+            </div>
+        </div>
+        <div class="drawer-menu">
+            <div class="drawer-item active"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></div>
+            <div class="drawer-item"><i class="fa-solid fa-compass"></i><span>Explore</span></div>
+        </div>
+        <div class="drawer-section">
+            <h3>Weather & Time</h3>
+            <div class="weather-time-card">
+                <div class="weather-content">
+                    <div class="weather-main">
+                        <i class="fa-solid fa-cloud-sun weather-icon-large"></i>
+                        <span class="temp-display">29°C</span>
+                    </div>
+                    <div class="weather-info-text">
+                        <div class="weather-status">Cerah Berawan</div>
+                        <div class="weather-city">Jakarta, ID</div>
+                    </div>
+                </div>
+                <div class="card-time-footer">
+                    <span id="drawer-time" class="time-text">00.00</span>
+                    <span id="drawer-date" class="date-text">1 Juli 2026</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desktop Sidebar -->
+    <aside>
+        <div class="logo">f</div>
+        <div class="nav-menu">
+            <div class="nav-item active"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="nav-item"><i class="fa-solid fa-compass"></i></div>
+        </div>
+        <div class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i></div>
+    </aside>
+
+    <main>
+        <div class="dashboard-center">
+            <div class="topbar">
+                <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="dashboardSearch" placeholder="Search by creator or collection...">
+                </div>
+                <div class="topbar-actions"></div>
+            </div>
+
+            <!-- Sections 1: Live Auction -->
+            <section id="auctionSection">
+                <div class="section-header">
+                    <h2>Popular NFT's Live Auction</h2>
+                </div>
+                <div class="auction-grid" id="auctionGrid">
+                    <div class="status-loading"><i class="fa-solid fa-circle-notch fa-spin"></i> Memuat galeri...</div>
+                </div>
+            </section>
+
+            <!-- SECTIONS 2: Featured Masterpieces -->
+            <section id="swiperSection">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-fire" style="color: #ff007f;"></i> Featured Masterpieces</h2>
+                </div>
+                <div class="swiper-container-wrapper">
+                    <div class="swiper mySwiper">
+                        <div class="swiper-wrapper" id="swiperWrapper"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sections 3: Hot Bids -->
+            <section id="hotBidsSection">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-bolt" style="color: orange;"></i> Hot Bids</h2>
+                </div>
+                <div class="bids-grid" id="hotBidsGrid"></div>
+            </section>
+        </div>
+
+        <!-- Desktop Right Panel -->
+        <div class="right-panel">
+            <div class="profile-header">
+                <img class="profile-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Musfiqur" alt="Avatar">
+                <div class="profile-name">Musfiqur Rahman</div>
+                <div class="profile-email">nftexpert@gmail.com</div>
+                <div class="stats-row">
+                    <div class="stat-item"><i class="fa-brands fa-facebook"></i></div>
+                    <div class="stat-item"><i class="fa-brands fa-instagram"></i></div>
+                    <div class="stat-item"><i class="fa-brands fa-youtube"></i></div>
+                    <div class="stat-item"><i class="fa-brands fa-tiktok"></i></div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 style="font-size: 16px; margin-bottom: 12px;">Weather & Time</h3>
+                <div class="weather-time-card">
+                    <div class="weather-content">
+                        <div class="weather-main">
+                            <i class="fa-solid fa-cloud-sun weather-icon-large"></i>
+                            <span class="temp-display">29°C</span>
+                        </div>
+                        <div class="weather-info-text">
+                            <div class="weather-status">Cerah Berawan</div>
+                            <div class="weather-city">Jakarta, ID</div>
+                        </div>
+                    </div>
+                    <div class="weather-details">
+                        <span><i class="fa-solid fa-droplet"></i> Kelembapan: 75%</span>
+                        <span><i class="fa-solid fa-wind"></i> Angin: 12 km/h</span>
+                    </div>
+                    <div class="card-time-footer">
+                        <span id="live-time" class="time-text">00.00</span>
+                        <span id="live-date" class="date-text">1 Juli 2026</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-activity">
+                <h3 style="font-size: 16px; margin-bottom: 12px;">Recent Activity</h3>
+                <div class="activity-item">
+                    <img class="activity-img" src="https://picsum.photos/80/80?random=31" alt="">
+                    <div style="flex-grow: 1;">
+                        <p style="font-size:13px; font-weight:600;">Crystal_Art</p>
+                        <span style="font-size:11px; color:var(--text-muted);">by @rudepixel</span>
+                    </div>
+                    <span style="font-size:12px; font-weight:600; color:var(--neon-cyan);">6.25 ETH</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        let swiperInstance = null;
+        let originalFoldersData = [];
+
+        // LOAD DATA SYSTEM URUTAN AMAN
+        async function initDashboard() {
+            try {
+                const response = await fetch('list.txt');
+                const text = await response.text();
+                const urls = text.split('\n').map(u => u.trim()).filter(u => u.length > 0);
+                
+                for (let url of urls) {
+                    await fetchFolderData(url);
+                }
+                
+                renderFilteredDashboard("");
+                
+                document.getElementById('dashboardSearch').addEventListener('input', (e) => {
+                    renderFilteredDashboard(e.target.value.trim().toLowerCase());
+                });
+            } catch (err) {
+                console.error("Gagal memuat list data API:", err);
+                document.getElementById('auctionGrid').innerHTML = "<div class='status-loading'>Gagal membaca file list.txt server.</div>";
+            }
+        }
+
+        async function fetchFolderData(url) {
+            try {
+                const res = await fetch(url);
+                const contents = await res.json();
+                const images = contents.filter(item => item.type === 'file' && item.name.match(/\.(jpg|jpeg|png|webp|gif)$/i));
+                
+                if (images.length === 0) return;
+                
+                // Ambil nama folder dari URL API GitHub
+                const parts = url.replace(/\/$/, "").split('/');
+                const folderName = parts[parts.length - 1] || parts[parts.length - 2] || "Collection";
+                
+                // Ambil nama author secara dinamis dari URL repository GitHub
+                let authorName = "yeeiznix";
+                if(url.includes("repos/")) {
+                    authorName = url.split("repos/")[1].split("/")[0];
+                }
+                
+                // Simpan satu data objek per folder (Sama seperti Featured Masterpieces)
+                originalFoldersData.push({ 
+                    apiUrl: url, 
+                    name: folderName, 
+                    author: authorName,
+                    totalItems: images.length, 
+                    coverUrl: images[0].download_url 
+                });
+            } catch(e) {
+                console.error("Error pada folder:", url, e);
+            }
+        }
+
+        function renderFilteredDashboard(keyword) {
+            const auctionGrid = document.getElementById('auctionGrid');
+            const swiperWrapper = document.getElementById('swiperWrapper');
+            const hotBidsGrid = document.getElementById('hotBidsGrid');
+            
+            auctionGrid.innerHTML = "";
+            swiperWrapper.innerHTML = "";
+            hotBidsGrid.innerHTML = "";
+
+            const filteredFolders = originalFoldersData.filter(f => f.name.toLowerCase().includes(keyword));
+
+            if (filteredFolders.length === 0) {
+                auctionGrid.innerHTML = "<div class='status-loading'>Tidak ada koleksi atau NFT yang ditemukan.</div>";
+                document.getElementById('auctionSection').style.display = 'block';
+                document.getElementById('swiperSection').style.display = 'none';
+                document.getElementById('hotBidsSection').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('auctionSection').style.display = filteredFolders.length ? 'block' : 'none';
+            document.getElementById('swiperSection').style.display = filteredFolders.length ? 'block' : 'none';
+            document.getElementById('hotBidsSection').style.display = filteredFolders.length ? 'block' : 'none';
+
+            // 1. Render Live Auction (Maksimal 2 folder pertama)
+            filteredFolders.slice(0, 2).forEach(folder => {
+                const card = document.createElement('div');
+                card.className = 'auction-card';
+                card.style.backgroundImage = `url('${folder.coverUrl}')`;
+                card.onclick = () => window.location.href = `gallery.html?api=${encodeURIComponent(folder.apiUrl)}&name=${folder.name}`;
+                card.innerHTML = `
+                    <div class="auction-overlay">
+                        <div class="time-box"><div>Collection</div><span>${folder.name}</span></div>
+                        <div class="bid-box"><div>Total Items</div><span>${folder.totalItems} Pics</span></div>
+                        <button class="btn-bid">View Album</button>
+                    </div>`;
+                auctionGrid.appendChild(card);
+            });
+
+            // 2. Render Featured Masterpieces (Semua folder masuk Swiper Slider)
+            filteredFolders.forEach(folder => {
+                const slide = document.createElement('div');
+                slide.className = 'swiper-slide';
+                slide.style.backgroundImage = `url('${folder.coverUrl}')`;
+                slide.onclick = () => window.location.href = `gallery.html?api=${encodeURIComponent(folder.apiUrl)}&name=${folder.name}`;
+                slide.innerHTML = `
+                    <div class="slide-info-overlay">
+                        <div class="slide-meta-top"><span class="slide-title">${folder.name}</span><span class="slide-author">by @${folder.author}</span></div>
+                        <div class="slide-meta-bottom"><span class="slide-price">${folder.totalItems} Items</span><span class="slide-likes"><i class="fa-solid fa-heart"></i> Open</span></div>
+                    </div>`;
+                swiperWrapper.appendChild(slide);
+            });
+
+            if (swiperInstance) swiperInstance.destroy(true, true);
+            if (filteredFolders.length) {
+                swiperInstance = new Swiper(".mySwiper", {
+                    slidesPerView: "auto",
+                    centeredSlides: true,
+                    loop: filteredFolders.length > 2, 
+                    spaceBetween: 0,
+                    observer: true,
+                    observeParents: true
+                });
+            }
+
+            // 3. Render Hot Bids (Berbasis Folder Unik, BUKAN merandom file gambar)
+            filteredFolders.forEach(folder => {
+                const bidCard = document.createElement('div');
+                bidCard.className = 'bid-card';
+                bidCard.onclick = () => window.location.href = `gallery.html?api=${encodeURIComponent(folder.apiUrl)}&name=${folder.name}`;
+                bidCard.innerHTML = `
+                    <img class="bid-thumbnail" src="${folder.coverUrl}" alt="${folder.name}">
+                    <div class="bid-title">${folder.name}</div>
+                    <div class="bid-author">gallery by @${folder.author}</div>`;
+                hotBidsGrid.appendChild(bidCard);
+            });
+        }
+
+        // --- LIVE TIMER & MOBILE SIDEBAR TOGGLE ---
+        function updateDateTime() {
+            const now = new Date();
+            const time = `${now.getHours().toString().padStart(2, "0")}.${now.getMinutes().toString().padStart(2, "0")}`;
+            const date = now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+            
+            if(document.getElementById("live-time")) document.getElementById("live-time").textContent = time;
+            if(document.getElementById("live-date")) document.getElementById("live-date").textContent = date;
+            if(document.getElementById("drawer-time")) document.getElementById("drawer-time").textContent = time;
+            if(document.getElementById("drawer-date")) document.getElementById("drawer-date").textContent = date;
+        }
+        
+        setInterval(updateDateTime, 60000);
+        updateDateTime();
+
+        const menuToggle = document.getElementById("menuToggle");
+        const drawer = document.getElementById("mobileDrawer");
+        const overlay = document.getElementById("mobileOverlay");
+        const closeBtn = document.getElementById("drawerClose");
+
+        if(menuToggle) menuToggle.addEventListener("click", () => {
+            drawer.classList.add("active");
+            overlay.classList.add("active");
+        });
+        if(closeBtn) closeBtn.addEventListener("click", () => {
+            drawer.classList.remove("active");
+            overlay.classList.remove("active");
+        });
+        if(overlay) overlay.addEventListener("click", () => {
+            drawer.classList.remove("active");
+            overlay.classList.remove("active");
+        });
+
+        initDashboard();
+    </script>
+</body>
+</html>
