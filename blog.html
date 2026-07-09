@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebCraft Studio - Professional Page Builder</title>
+    <!-- Tailwind CSS untuk UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons untuk Ikon Visual -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom Scrollbar untuk kenyamanan UI */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1e1e2e; }
+        ::-webkit-scrollbar-thumb { background: #313244; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #45475a; }
+        
+        .element-selected { outline: 2px solid #89b4fa !important; outline-offset: 2px; }
+        .ghost-hover:hover { background-color: rgba(255,255,255,0.03); }
+        
+        /* Glassmorphism preview helper */
+        .glass-preview {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-[#11111b] text-[#cdd6f4] h-screen flex flex-col font-sans overflow-hidden">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-[#1e1e2e] border-b border-[#313244] px-6 py-3 flex justify-between items-center z-10">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-blue-500 to-purple-600 p-2 rounded-xl text-white">
+                <i data-lucide="layers" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="text-md font-bold tracking-wide text-white flex items-center gap-2">WebCraft Studio <span class="text-xs bg-[#313244] text-[#a6adc8] px-2 py-0.5 rounded-md font-normal">v1.0 Final</span></h1>
+                <p class="text-xs text-[#a6adc8]">Advanced Semantic Article & Page Builder</p>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2">
+            <button onclick="togglePreviewMode()" id="btn-preview-mode" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#313244] hover:bg-[#45475a] text-white rounded-lg text-xs font-medium transition">
+                <i data-lucide="eye" class="w-4 h-4"></i> Live Preview
+            </button>
+            <div class="h-4 w-[1px] bg-[#313244] mx-1"></div>
+            <button onclick="exportMarkdown()" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#313244] hover:bg-[#45475a] text-[#a6adc8] hover:text-white rounded-lg text-xs font-medium transition">
+                <i data-lucide="file-text" class="w-4 h-4"></i> Markdown
+            </button>
+            <button onclick="copyHTML()" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#313244] hover:bg-[#45475a] text-[#a6adc8] hover:text-white rounded-lg text-xs font-medium transition">
+                <i data-lucide="copy" class="w-4 h-4"></i> Salin HTML
+            </button>
+            <button onclick="downloadHTML()" class="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg text-xs font-semibold shadow-lg shadow-indigo-500/10 transition">
+                <i data-lucide="download" class="w-4 h-4"></i> Download Pro HTML
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="flex-1 flex overflow-hidden w-full relative">
+        
+        <!-- LEFT PANEL: COMPONENT LIBRARY -->
+        <aside class="w-72 bg-[#1e1e2e] border-r border-[#313244] flex flex-col overflow-y-auto z-10">
+            <div class="p-4 border-b border-[#313244]">
+                <span class="text-xs font-bold uppercase tracking-wider text-[#cba6f7]">Tambah Elemen</span>
+                <p class="text-[11px] text-[#04a5e5] mt-0.5">Klik elemen untuk memasukkan ke halaman</p>
+            </div>
+            
+            <div class="p-3 space-y-4">
+                <!-- Kategori: Teks -->
+                <div>
+                    <h3 class="text-xs font-semibold text-[#a6adc8] mb-2 px-1 flex items-center gap-1.5"><i data-lucide="type" class="w-3.5 h-3.5"></i> 📝 TEKS & KONTEN</h3>
+                    <div class="grid grid-cols-2 gap-1.5 text-xs">
+                        <button onclick="addElement('h1')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">Judul Utama (H1)</button>
+                        <button onclick="addElement('h2')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">Sub Judul (H2)</button>
+                        <button onclick="addElement('p')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">Paragraf Standar</button>
+                        <button onclick="addElement('blockquote')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">Kutipan Kata</button>
+                        <button onclick="addElement('bullet-list')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">List Bullet</button>
+                        <button onclick="addElement('hr')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">Garis Pembatas</button>
+                    </div>
+                </div>
+
+                <!-- Kategori: Media -->
+                <div>
+                    <h3 class="text-xs font-semibold text-[#a6adc8] mb-2 px-1 flex items-center gap-1.5"><i data-lucide="image" class="w-3.5 h-3.5"></i> 🖼️ MEDIA & VISUAL</h3>
+                    <div class="grid grid-cols-2 gap-1.5 text-xs">
+                        <button onclick="addElement('image')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">Gambar Responsif</button>
+                        <button onclick="addElement('youtube')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">YouTube Video</button>
+                    </div>
+                </div>
+
+                <!-- Kategori: Tombol & CTA -->
+                <div>
+                    <h3 class="text-xs font-semibold text-[#a6adc8] mb-2 px-1 flex items-center gap-1.5"><i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5"></i> 🔘 ACTION BUTTON / CTA</h3>
+                    <div class="grid grid-cols-1 gap-1.5 text-xs">
+                        <button onclick="addElement('cta-card')" class="p-2 bg-gradient-to-r from-blue-900/40 to-purple-900/40 hover:from-blue-900/60 hover:to-purple-900/60 rounded text-left transition border border-blue-500/30 text-blue-200 font-medium flex items-center justify-between">
+                            <span>Premium CTA Box</span> <i data-lucide="sparkles" class="w-3 h-3 text-yellow-400"></i>
+                        </button>
+                        <button onclick="addElement('button-custom')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">Tombol Kustomisasi</button>
+                    </div>
+                </div>
+
+                <!-- Kategori: Card & Box Info -->
+                <div>
+                    <h3 class="text-xs font-semibold text-[#a6adc8] mb-2 px-1 flex items-center gap-1.5"><i data-lucide="info" class="w-3.5 h-3.5"></i> ⭐ BLOK INFO & ALERTS</h3>
+                    <div class="grid grid-cols-2 gap-1.5 text-xs">
+                        <button onclick="addElement('box-tips')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244] text-green-400">Tips Box</button>
+                        <button onclick="addElement('box-warning')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244] text-yellow-400">Warning Box</button>
+                    </div>
+                </div>
+
+                <!-- Kategori: Layout Multi Kolom -->
+                <div>
+                    <h3 class="text-xs font-semibold text-[#a6adc8] mb-2 px-1 flex items-center gap-1.5"><i data-lucide="columns" class="w-3.5 h-3.5"></i> 🧩 STRUKTUR & LAYOUT</h3>
+                    <div class="grid grid-cols-2 gap-1.5 text-xs">
+                        <button onclick="addElement('grid-2')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">2 Kolom Grid</button>
+                        <button onclick="addElement('grid-3')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">3 Kolom Grid</button>
+                    </div>
+                </div>
+
+                <!-- Kategori: Data & Interaktif -->
+                <div>
+                    <h3 class="text-xs font-semibold text-[#a6adc8] mb-2 px-1 flex items-center gap-1.5"><i data-lucide="table" class="w-3.5 h-3.5"></i> 📊 DATA & INTERAKTIF</h3>
+                    <div class="grid grid-cols-1 gap-1.5 text-xs">
+                        <button onclick="addElement('accordion-faq')" class="p-2 bg-[#252538] hover:bg-[#313244] rounded text-left transition border border-[#313244]">Accordion FAQ</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER PANEL: LIVE DYNAMIC CANVAS / EDITOR -->
+        <main class="flex-1 bg-[#161622] p-8 overflow-y-auto flex justify-center items-start relative select-none">
+            <!-- Canvas Konten Utama -->
+            <div id="editor-canvas" class="w-full max-w-4xl bg-white text-slate-800 min-h-[85vh] rounded-xl shadow-2xl p-12 space-y-6 transition-all duration-300 border border-slate-200">
+                <!-- Placeholder awal jika kosong -->
+                <div id="canvas-placeholder" class="text-center py-20 text-slate-400 pointer-events-none">
+                    <i data-lucide="file-plus" class="w-12 h-12 mx-auto mb-3 opacity-40"></i>
+                    <p class="font-medium text-slate-500">Canvas Masih Kosong</p>
+                    <p class="text-xs text-slate-400 mt-1">Klik elemen di panel kiri untuk mulai menyusun halaman profesional Anda</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL: DYNAMIC INSPECTOR & PROPERTIES / SEO -->
+        <aside class="w-80 bg-[#1e1e2e] border-l border-[#313244] flex flex-col overflow-y-auto z-10">
+            <!-- Tabs -->
+            <div class="flex border-b border-[#313244] bg-[#181825]">
+                <button onclick="switchRightTab('style')" id="tab-style" class="flex-1 py-3 text-xs font-bold tracking-wider uppercase text-center border-b-2 border-blue-500 text-white">
+                    Desain & Gaya
+                </button>
+                <button onclick="switchRightTab('seo')" id="tab-seo" class="flex-1 py-3 text-xs font-bold tracking-wider uppercase text-center border-b-2 border-transparent text-[#a6adc8]">
+                    Konfigurasi SEO
+                </button>
+            </div>
+
+            <!-- Tab Content: Style Inspector -->
+            <div id="panel-style" class="p-4 space-y-4">
+                <div id="no-selection-message" class="text-center py-12 text-[#a6adc8]">
+                    <i data-lucide="sliders" class="w-8 h-8 mx-auto mb-2 opacity-30"></i>
+                    <p class="text-xs">Pilih salah satu elemen di lembar kerja untuk memodifikasi properti desain.</p>
+                </div>
+
+                <div id="inspector-controls" class="hidden space-y-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-[#313244]">
+                        <span class="text-xs font-bold text-[#cba6f7] uppercase tracking-wide" id="active-element-title">Elemen</span>
+                        <button onclick="deleteActiveElement()" class="text-red-400 hover:text-red-300 text-xs flex items-center gap-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Hapus
+                        </button>
+                    </div>
+
+                    <!-- Input Konten Dinamis -->
+                    <div id="prop-content-wrapper" class="space-y-1.5">
+                        <label class="text-[11px] font-semibold text-[#a6adc8] uppercase">Teks Konten</label>
+                        <textarea id="prop-content" oninput="updateActiveElement('content', this.value)" class="w-full bg-[#11111b] border border-[#313244] rounded p-2 text-xs text-white focus:outline-none focus:border-blue-500" rows="3"></textarea>
+                    </div>
+
+                    <!-- Input Link Tujuan (Khusus Link/Button) -->
+                    <div id="prop-link-wrapper" class="space-y-1.5 hidden">
+                        <label class="text-[11px] font-semibold text-[#a6adc8] uppercase">Tautan Tujuan (URL)</label>
+                        <input type="text" id="prop-link" oninput updateActiveElement('link', this.value)" class="w-full bg-[#11111b] border border-[#313244] rounded p-2 text-xs text-white focus:outline-none focus:border-blue-500" placeholder="https://...">
+                    </div>
+
+                    <!-- Warna Background -->
+                    <div id="prop-bg-wrapper" class="space-y-1.5">
+                        <label class="text-[11px] font-semibold text-[#a6adc8] uppercase">Warna Latar (Hex/Tailwind)</label>
+                        <input type="text" id="prop-bg" oninput="updateActiveElement('bg', this.value)" class="w-full bg-[#11111b] border border-[#313244] rounded p-2 text-xs text-white focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <!-- Warna Teks -->
+                    <div id="prop-color-wrapper" class="space-y-1.5">
+                        <label class="text-[11px] font-semibold text-[#a6adc8] uppercase">Warna Teks (Hex/Tailwind)</label>
+                        <input type="text" id="prop-color" oninput="updateActiveElement('color', this.value)" class="w-full bg-[#11111b] border border-[#313244] rounded p-2 text-xs text-white focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <!-- Rentang Ukuran / Padding / Radius -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-semibold text-[#a6adc8] uppercase">Ukuran Font</label>
+                            <select id="prop-size" onchange="updateActiveElement('size', this.value)" class="w-full bg-[#11111b] border border-[#313244] rounded p-1.5 text-xs text-white">
+                                <option value="text-xs">Sangat Kecil</option>
+                                <option value="text-sm">Kecil</option>
+                                <option value="text-base">Normal</option>
+                                <option value="text-lg">Medium</option>
+                                <option value="text-xl">Besar</option>
+                                <option value="text-2xl">H2 Besar</option>
+                                <option value="text-4xl">H1 Monumental</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-semibold text-[#a6adc8] uppercase">Sudut (Radius)</label>
+                            <select id="prop-radius" onchange="updateActiveElement('radius', this.value)" class="w-full bg-[#11111b] border border-[#313244] rounded p-1.5 text-xs text-white">
+                                <option value="rounded-none">Siku-siku</option>
+                                <option value="rounded">Standar</option>
+                                <option value="rounded-lg">Melengkung</option>
+                                <option value="rounded-xl">Sangat Melengkung</option>
+                                <option value="rounded-full">Kapsul (Full)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Align Posisi -->
+                    <div class="space-y-1.5">
+                        <label class="text-[11px] font-semibold text-[#a6adc8] uppercase">Penyelarasan Posisi (Alignment)</label>
+                        <div class="grid grid-cols-3 gap-1">
+                            <button onclick="updateActiveElement('align', 'left')" class="p-1.5 bg-[#11111b] hover:bg-[#313244] text-xs rounded text-center">Kiri</button>
+                            <button onclick="updateActiveElement('align', 'center')" class="p-1.5 bg-[#11111b] hover:bg-[#313244] text-xs rounded text-center">Tengah</button>
+                            <button onclick="updateActiveElement('align', 'right')" class="p-1.5 bg-[#11111b] hover:bg-[#313244] text-xs rounded text-center">Kanan</button>
+                        </div>
+                    </div>
+
+                    <!-- Efek Spesial (Glow, Glassmorphism, 3D, Shadow) -->
+                    <div class="space-y-1.5 pt-2">
+                        <label class="text-[11px] font-semibold text-[#a6adc8] uppercase block mb-1">Efek & Visual Spesial</label>
+                        <div class="space-y-1 text-xs">
+                            <label class="flex items-center gap-2 p-1.5 bg-[#11111b] rounded cursor-pointer"><input type="checkbox" id="efek-glass" onchange="updateActiveElement('effect-glass', this.checked)"> Glassmorphism (Blur)</label>
+                            <label class="flex items-center gap-2 p-1.5 bg-[#11111b] rounded cursor-pointer"><input type="checkbox" id="efek-shadow" onchange="updateActiveElement('effect-shadow', this.checked)"> Drop Shadow Tegas</label>
+                            <label class="flex items-center gap-2 p-1.5 bg-[#11111b] rounded cursor-pointer"><input type="checkbox" id="efek-3d" onchange="updateActiveElement('effect-3d', this.checked)"> Efek 3D Menekan</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: SEO Master Configuration -->
+            <div id="panel-seo" class="p-4 space-y-4 hidden">
+                <div class="pb-2 border-b border-[#313244]">
+                    <span class="text-xs font-bold text-[#f9e2af] uppercase tracking-wide">SEO & Meta Tags Engine</span>
+                </div>
+                <div class="space-y-3 text-xs">
+                    <div class="space-y-1">
+                        <label class="text-[11px] text-[#a6adc8] uppercase block">Meta Title Halaman</label>
+                        <input type="text" id="seo-title" value="Artikel Menarik Hasil Kreasi WebCraft" class="w-full bg-[#11111b] border border-[#313244] rounded p-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[11px] text-[#a6adc8] uppercase block">Meta Description</label>
+                        <textarea id="seo-desc" rows="3" class="w-full bg-[#11111b] border border-[#313244] rounded p-2 text-white focus:outline-none focus:border-blue-500" placeholder="Deskripsi ringkas halaman untuk Google SERP..."></textarea>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[11px] text-[#a6adc8] uppercase block">Keywords (Pisah koma)</label>
+                        <input type="text" id="seo-keys" value="webcraft, builder, html, export" class="w-full bg-[#11111b] border border-[#313244] rounded p-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[11px] text-[#a6adc8] uppercase block">Target Canonical URL</label>
+                        <input type="text" id="seo-canonical" value="https://domainanda.com/artikel-ini" class="w-full bg-[#11111b] border border-[#313244] rounded p-2 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- MAIN ENGINE CONTROLLER JS -->
+    <script>
+        // State Management
+        let selectedElement = null;
+        let isPreviewMode = false;
+        const canvas = document.getElementById('editor-canvas');
+        const placeholder = document.getElementById('canvas-placeholder');
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Engine: Add Element
+        function addElement(type) {
+            if (placeholder) placeholder.style.display = 'none';
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = "group relative p-3 rounded-lg border border-transparent hover:border-blue-400/40 my-2 transition-all cursor-pointer";
+            wrapper.setAttribute('data-type', type);
+            
+            // Generate Inner Semantic Base Structure
+            let innerHTML = '';
+            switch(type) {
+                case 'h1':
+                    innerHTML = `<h1 class="text-4xl font-extrabold text-slate-900 tracking-tight transition-all">Judul Monumental Utama Anda H1</h1>`;
+                    break;
+                case 'h2':
+                    innerHTML = `<h2 class="text-2xl font-bold text-slate-800 tracking-tight transition-all">Sub-Judul Pendukung H2</h2>`;
+                    break;
+                case 'p':
+                    innerHTML = `<p class="text-base text-slate-600 leading-relaxed transition-all">Ini adalah paragraf standar. Anda bisa mengubah baris tulisan ini secara instan lewat panel inspektor kanan ataupun langsung melakukan penyesuaian visual.</p>`;
+                    break;
+                case 'blockquote':
+                    innerHTML = `<blockquote class="border-l-4 border-indigo-500 pl-4 italic text-slate-700 bg-slate-50 py-2 rounded-r transition-all">"Kutipan inspiratif atau statement utama dari artikel yang ingin ditonjolkan ke pembaca."</blockquote>`;
+                    break;
+                case 'bullet-list':
+                    innerHTML = `<ul class="list-disc pl-5 space-y-1 text-slate-600 transition-all"><li>Item list pertama yang terstruktur</li><li>Item kedua kontribusi data penting</li></ul>`;
+                    break;
+                case 'hr':
+                    innerHTML = `<hr class="my-4 border-t border-slate-300 w-full transition-all" />`;
+                    break;
+                case 'image':
+                    innerHTML = `<div class="w-full transition-all flex justify-center"><img src="https://images.unsplash.com/photo-1504805572947-34fac47a4ed6?w=800" alt="Placeholder" class="rounded-xl max-w-full h-auto shadow-md"></div>`;
+                    break;
+                case 'youtube':
+                    innerHTML = `<div class="w-full aspect-video rounded-xl overflow-hidden shadow-lg transition-all flex justify-center"><iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe></div>`;
+                    break;
+                case 'button-custom':
+                    innerHTML = `<div class="w-full flex justify-center transition-all"><a href="#" class="inline-block bg-blue-600 text-white font-medium px-6 py-2.5 rounded-lg text-sm transition-all shadow hover:bg-blue-700">Klik Tombol Aksi</a></div>`;
+                    break;
+                case 'cta-card':
+                    innerHTML = `
+                    <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl p-8 shadow-xl border border-indigo-500/20 flex flex-col md:flex-row items-center justify-between gap-6 transition-all">
+                        <div class="space-y-2 text-left">
+                            <span class="bg-indigo-500/20 text-indigo-300 text-xs px-3 py-1 rounded-full font-semibold border border-indigo-500/30">PROMO TERBATAS</span>
+                            <h3 class="text-xl font-bold tracking-tight">Dapatkan Akses Premium Selamanya</h3>
+                            <p class="text-sm text-slate-300 max-w-md">Tingkatkan efisiensi kerja tim Anda secara instan menggunakan infrastruktur cloud terintegrasi kami.</p>
+                        </div>
+                        <div>
+                            <a href="https://wa.me/#" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-500 hover:to-green-600 text-slate-950 font-bold px-6 py-3.5 rounded-xl text-sm tracking-wide shadow-lg shadow-green-500/20 transform hover:-translate-y-0.5 transition-all">
+                                <span>Hubungi via WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>`;
+                    break;
+                case 'box-tips':
+                    innerHTML = `<div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-900 rounded-r-lg flex gap-3 transition-all"><div class="font-bold text-sm">💡 TIPS:</div><div class="text-sm">Gunakan kombinasi warna kontras tinggi pada tombol CTA untuk melipatgandakan konversi klik pembaca.</div></div>`;
+                    break;
+                case 'box-warning':
+                    innerHTML = `<div class="p-4 bg-amber-50 border-l-4 border-amber-500 text-amber-900 rounded-r-lg flex gap-3 transition-all"><div class="font-bold text-sm">⚠️ PERINGATAN:</div><div class="text-sm">Pastikan tautan URL eksternal Anda menggunakan protokol HTTPS demi keamanan data pengguna.</div></div>`;
+                    break;
+                case 'grid-2':
+                    innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full transition-all">
+                        <div class="p-4 border border-dashed border-slate-300 rounded-xl text-center text-xs text-slate-400">Kolom Kiri (Klik & Edit Teks via Editor HTML)</div>
+                        <div class="p-4 border border-dashed border-slate-300 rounded-xl text-center text-xs text-slate-400">Kolom Kanan (Klik & Edit Teks via Editor HTML)</div>
+                    </div>`;
+                    break;
+                case 'grid-3':
+                    innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full transition-all">
+                        <div class="p-4 border border-dashed border-slate-300 rounded-xl text-center text-xs text-slate-400">Kolom 1</div>
+                        <div class="p-4 border border-dashed border-slate-300 rounded-xl text-center text-xs text-slate-400">Kolom 2</div>
+                        <div class="p-4 border border-dashed border-slate-300 rounded-xl text-center text-xs text-slate-400">Kolom 3</div>
+                    </div>`;
+                    break;
+                case 'accordion-faq':
+                    innerHTML = `
+                    <div class="border border-slate-200 rounded-xl overflow-hidden w-full transition-all">
+                        <div class="bg-slate-50 p-4 font-semibold text-sm border-b border-slate-200 flex justify-between items-center cursor-pointer">
+                            <span>Pertanyaan Yang Sering Diajukan?</span>
+                            <span class="text-xs text-slate-400">▼</span>
+                        </div>
+                        <div class="p-4 text-sm text-slate-600 bg-white">
+                            Ini adalah jawaban komprehensif dari FAQ yang bisa langsung dikustomisasi untuk membantu kejelasan informasi user Anda.
+                        </div>
+                    </div>`;
+                    break;
+            }
+
+            wrapper.innerHTML = innerHTML;
+            
+            // Click Handler untuk Aktivasi Komponen ke Inspector
+            wrapper.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (isPreviewMode) return;
+                setElementActive(wrapper);
+            });
+
+            canvas.appendChild(wrapper);
+            setElementActive(wrapper);
+        }
+
+        // Active State Controller
+        function setElementActive(el) {
+            if (selectedElement) selectedElement.classList.remove('element-selected');
+            selectedElement = el;
+            selectedElement.classList.add('element-selected');
+
+            // Open Control Panels
+            document.getElementById('no-selection-message').classList.add('hidden');
+            document.getElementById('inspector-controls').classList.remove('hidden');
+
+            const type = el.getAttribute('data-type');
+            document.getElementById('active-element-title').innerText = `Komponen: ${type.toUpperCase()}`;
+
+            // Sync Value Inspector dari Elemen Aktif
+            const target = el.firstElementChild;
+            
+            // Default setup input wrappers
+            document.getElementById('prop-link-wrapper').classList.add('hidden');
+            document.getElementById('prop-bg-wrapper').classList.remove('hidden');
+
+            if (type === 'h1' || type === 'h2' || type === 'p' || type === 'blockquote') {
+                document.getElementById('prop-content').value = target.innerText;
+            } else if (type === 'button-custom') {
+                const btn = target.querySelector('a') || target;
+                document.getElementById('prop-content').value = btn.innerText;
+                document.getElementById('prop-link-wrapper').classList.remove('hidden');
+                document.getElementById('prop-link').value = btn.getAttribute('href') || '#';
+            } else {
+                document.getElementById('prop-content').value = target.innerHTML;
+            }
+        }
+
+        // Live Engine Value Sync Updates
+        function updateActiveElement(property, value) {
+            if (!selectedElement) return;
+            const target = selectedElement.firstElementChild;
+            const type = selectedElement.getAttribute('data-type');
+
+            switch(property) {
+                case 'content':
+                    if (type === 'h1' || type === 'h2' || type === 'p' || type === 'blockquote') {
+                        target.innerText = value;
+                    } else if (type === 'button-custom') {
+                        const btn = target.querySelector('a') || target;
+                        btn.innerText = value;
+                    } else {
+                        target.innerHTML = value;
+                    }
+                    break;
+                case 'link':
+                    if (type === 'button-custom') {
+                        const btn = target.querySelector('a') || target;
+                        btn.setAttribute('href', value);
+                    }
+                    break;
+                case 'bg':
+                    // Deteksi jika input hex manual atau Tailwind utilities class
+                    if (value.startsWith('#')) {
+                        target.style.backgroundColor = value;
+                    } else {
+                        target.className = target.className.replace(/bg-\[\#[a-zA-Z0-9\-\_]+\]|bg-[a-z0-9\-]+/g, '');
+                        target.classList.add(value);
+                    }
+                    break;
+                case 'color':
+                    if (value.startsWith('#')) {
+                        target.style.color = value;
+                    } else {
+                        target.className = target.className.replace(/text-\[\#[a-zA-Z0-9\-\_]+\]|text-[a-z0-9\-]+/g, '');
+                        target.classList.add(value);
+                    }
+                    break;
+                case 'size':
+                    target.className = target.className.replace(/text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl)/g, '');
+                    target.classList.add(value);
+                    break;
+                case 'radius':
+                    const innerNode = type === 'button-custom' ? (target.querySelector('a') || target) : target;
+                    innerNode.className = innerNode.className.replace(/rounded(-[a-z0-9]+)?/g, '');
+                    innerNode.classList.add(value);
+                    break;
+                case 'align':
+                    selectedElement.className = selectedElement.className.replace(/flex|justify-(start|center|end)/g, '');
+                    if (value === 'center') selectedElement.classList.add('flex', 'justify-center');
+                    if (value === 'right') selectedElement.classList.add('flex', 'justify-end');
+                    if (value === 'left') selectedElement.classList.add('flex', 'justify-start');
+                    break;
+                case 'effect-glass':
+                    if (value) {
+                        target.classList.add('backdrop-blur-md', 'bg-white/30', 'border', 'border-white/20');
+                    } else {
+                        target.classList.remove('backdrop-blur-md', 'bg-white/30', 'border', 'border-white/20');
+                    }
+                    break;
+                case 'effect-shadow':
+                    if (value) target.classList.add('shadow-2xl', 'shadow-indigo-500/40');
+                    else target.classList.remove('shadow-2xl', 'shadow-indigo-500/40');
+                    break;
+                case 'effect-3d':
+                    if (value) target.classList.add('border-b-4', 'border-slate-900', 'active:border-b-0', 'transform', 'active:translate-y-1');
+                    else target.classList.remove('border-b-4', 'border-slate-900', 'active:border-b-0', 'transform', 'active:translate-y-1');
+                    break;
+            }
+        }
+
+        // Delete Element Handler
+        function deleteActiveElement() {
+            if (!selectedElement) return;
+            selectedElement.remove();
+            selectedElement = null;
+            document.getElementById('no-selection-message').classList.remove('hidden');
+            document.getElementById('inspector-controls').classList.add('hidden');
+            
+            if (canvas.children.length === 1 && canvas.children[0].id === 'canvas-placeholder') {
+                placeholder.style.display = 'block';
+            }
+        }
+
+        // Tab Switcher Right Panel
+        function switchRightTab(tab) {
+            const btnStyle = document.getElementById('tab-style');
+            const btnSeo = document.getElementById('tab-seo');
+            const panelStyle = document.getElementById('panel-style');
+            const panelSeo = document.getElementById('panel-seo');
+
+            if (tab === 'style') {
+                btnStyle.className = "flex-1 py-3 text-xs font-bold tracking-wider uppercase text-center border-b-2 border-blue-500 text-white";
+                btnSeo.className = "flex-1 py-3 text-xs font-bold tracking-wider uppercase text-center border-b-2 border-transparent text-[#a6adc8]";
+                panelStyle.classList.remove('hidden');
+                panelSeo.classList.add('hidden');
+            } else {
+                btnSeo.className = "flex-1 py-3 text-xs font-bold tracking-wider uppercase text-center border-b-2 border-blue-500 text-white";
+                btnStyle.className = "flex-1 py-3 text-xs font-bold tracking-wider uppercase text-center border-b-2 border-transparent text-[#a6adc8]";
+                panelSeo.classList.remove('hidden');
+                panelStyle.classList.add('hidden');
+            }
+        }
+
+        // Live Preview Toggle Mode
+        function togglePreviewMode() {
+            isPreviewMode = !isPreviewMode;
+            const btn = document.getElementById('btn-preview-mode');
+            if (isPreviewMode) {
+                if (selectedElement) selectedElement.classList.remove('element-selected');
+                btn.innerHTML = `<i data-lucide="edit" class="w-4 h-4"></i> Mode Edit`;
+                btn.classList.replace('bg-[#313244]', 'bg-amber-600');
+                // Sembunyikan garis pinggir hover komponen
+                canvas.classList.add('preview-active');
+            } else {
+                btn.innerHTML = `<i data-lucide="eye" class="w-4 h-4"></i> Live Preview`;
+                btn.classList.replace('bg-amber-600', 'bg-[#313244]');
+                canvas.classList.remove('preview-active');
+                if (selectedElement) selectedElement.classList.add('element-selected');
+            }
+            lucide.createIcons();
+        }
+
+        // HTML Core Cleaner
+        function getCleanHTMLContent() {
+            // Clone Canvas to preserve current working page
+            const clone = canvas.cloneNode(true);
+            
+            // Hapus placeholder jika ada
+            const pl = clone.querySelector('#canvas-placeholder');
+            if (pl) pl.remove();
+
+            // Bersihkan wrapper grid/element utilitas editor agar murni menghasilkan kode html standar produksi
+            const elements = clone.querySelectorAll('[data-type]');
+            elements.forEach(el => {
+                // Konversi isi murni tanpa pembungkus klik sistem editor
+                const innerCode = el.innerHTML;
+                const wrapper = document.createElement('div');
+                wrapper.className = "mb-6 w-full";
+                wrapper.innerHTML = innerCode;
+                el.parentNode.replaceChild(wrapper, el);
+            });
+
+            return clone.innerHTML;
+        }
+
+        // Master Build Page HTML Template Generator
+        function generateFullHTMLDocument() {
+            const cleanHTML = getCleanHTMLContent();
+            const sTitle = document.getElementById('seo-title').value;
+            const sDesc = document.getElementById('seo-desc').value;
+            const sKeys = document.getElementById('seo-keys').value;
+            const sCanonical = document.getElementById('seo-canonical').value;
+
+            return `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${sTitle}</title>
+    <meta name="description" content="${sDesc}">
+    <meta name="keywords" content="${sKeys}">
+    <link rel="canonical" href="${sCanonical}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="${sTitle}">
+    <meta property="og:description" content="${sDesc}">
+    <meta property="og:url" content="${sCanonical}">
+    
+    <!-- Tailwind Engine Terintegrasi CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen py-12 px-4 flex justify-center items-start">
+    <main class="w-full max-w-4xl bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 md:p-12 space-y-6">
+        ${cleanHTML}
+    </main>
+</body>
+</html>`;
+        }
+
+        // Export Actions: Download Ready Code
+        function downloadHTML() {
+            const fullCode = generateFullHTMLDocument();
+            const blob = new Blob([fullCode], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'webcraft-production-page.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Copy Code to Clipboard
+        function copyHTML() {
+            const fullCode = generateFullHTMLDocument();
+            navigator.clipboard.writeText(fullCode).then(() => {
+                alert('🚀 Seluruh struktur kode HTML Produksi berhasil disalin ke clipboard!');
+            }).catch(err => {
+                alert('Gagal menyalin kode: ', err);
+            });
+        }
+
+        // Export murni teks ke format Markdown (.md)
+        function exportMarkdown() {
+            let markdown = "";
+            const elements = canvas.querySelectorAll('[data-type]');
+            
+            elements.forEach(el => {
+                const type = el.getAttribute('data-type');
+                const target = el.firstElementChild;
+                
+                if (type === 'h1') markdown += `# ${target.innerText}\n\n`;
+                else if (type === 'h2') markdown += `## ${target.innerText}\n\n`;
+                else if (type === 'p') markdown += `${target.innerText}\n\n`;
+                else if (type === 'blockquote') markdown += `> ${target.innerText}\n\n`;
+                else if (type === 'hr') markdown += `---\n\n`;
+                else if (type === 'button-custom') {
+                    const btn = target.querySelector('a') || target;
+                    markdown += `[${btn.innerText}](${btn.getAttribute('href')})\n\n`;
+                }
+            });
+
+            if(!markdown) {
+                alert("Canvas kosong, tambahkan teks terlebih dahulu.");
+                return;
+            }
+
+            const blob = new Blob([markdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'konten-artikel.md';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
