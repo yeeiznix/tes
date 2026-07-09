@@ -1,1 +1,7 @@
-
+https://api.github.com/repos/yeeiznix/GALER/contents/205MSDCF
+https://api.github.com/repos/yeeiznix/GALER/contents/207MSDCF
+https://api.github.com/repos/yeeiznix/GALER/contents/209MSDCF
+https://api.github.com/repos/yeeiznix/GALER/contents/258MSDCF
+https://api.github.com/repos/yeeiznix/GALER/contents/GLR
+https://api.github.com/repos/yeeiznix/GALER/contents/camera
+https://api.github.com/repos/yeeiznix/GALER/contents/canon
